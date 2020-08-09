@@ -11,6 +11,9 @@ import numpy as np
 import python_speech_features
 import scipy.io.wavfile as wav
 
+import librosa
+from librosa import effects
+
 from .. import config
 from ..exceptions import PersephoneException
 
@@ -33,10 +36,13 @@ def extract_energy(rate, sig):
 def fbank(wav_path, flat=True):
     """ Currently grabs log Mel filterbank, deltas and double deltas."""
 
-    (rate, sig) = wav.read(wav_path)
+    (sig, rate) = librosa.load(wav_path, sr=None)
+    sig = librosa.to_mono(librosa.resample(sig, rate, 16000))
+    rate = 16000
+    sig, _ = effects.trim(sig[int(0.1 * rate):], top_db=20, frame_length=128, hop_length=64)
     if len(sig) == 0:
         logger.warning("Empty wav: {}".format(wav_path))
-    fbank_feat = python_speech_features.logfbank(sig, rate, nfilt=40)
+    fbank_feat = python_speech_features.logfbank(sig, rate, nfilt=40,  lowfreq=250, highfreq=6000)
     energy = extract_energy(rate, sig)
     feat = np.hstack([energy, fbank_feat])
     delta_feat = python_speech_features.delta(feat, 2)
