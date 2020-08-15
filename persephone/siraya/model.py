@@ -39,6 +39,26 @@ TARGET_LEXICON = list(map(lambda x: x.split(" "), [
 "w a g i"
 ]))
 
+TARGET_LEXICON_IPA = list(map(lambda x: x.split(" "), [
+    "m u s u",
+    "h a p a",
+    "d a r aŋ",
+    "t ǝ m i k u x",
+    "f ǝ n aŋ",
+    "v u r i x an",
+    "v u r i x",
+    "w a i",
+    "v u k i n",
+    "p a r a n a x",
+    "z a r o x",
+    "k a r u t k u t",
+    "p u r a r ay",
+    "a i am",
+    "v a w uŋ"
+
+]))
+
+
 class SirayaModel(rnn_ctc.Model):
 
     def __init__(self, exp_dir: Union[str, Path], corpus_reader, num_layers: int = 3,
@@ -55,7 +75,7 @@ class SirayaModel(rnn_ctc.Model):
         sf.write("/tmp/proc.wav", sig, rate)
         if len(sig) == 0:
             logger.warning("Empty wav: {}".format(wav_path))
-        fbank_feat = python_speech_features.logfbank(sig, rate, nfilt=40, lowfreq=250, highfreq=6000)
+        fbank_feat = python_speech_features.logfbank(sig, rate, nfilt=40, lowfreq=50, highfreq=8000)
         mfcc = python_speech_features.mfcc(sig, rate, appendEnergy=True)
         energy_row_vec = mfcc[:, 0]
         energy = energy_row_vec[:, np.newaxis]
@@ -115,4 +135,4 @@ class SirayaModel(rnn_ctc.Model):
             hyp_batches.append((hyps,feat_fn_batch))
             from persephone import distance
             prediction = hyp_batches[0][0][0]
-            return prediction, list(zip(["".join(x) for x in TARGET_LEXICON], [distance.min_edit_distance(prediction,x) for x in TARGET_LEXICON]))
+            return prediction, list(zip(["".join(x) for x in TARGET_LEXICON_IPA], [distance.min_edit_distance(prediction,x) for x in TARGET_LEXICON_IPA]))

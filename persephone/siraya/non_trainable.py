@@ -17,8 +17,8 @@ class FakeCorpus(corpus.Corpus):
         return self._nf
 
     @classmethod
-    def from_pickle(cls, tgt_dir: Path):
-        pickle_path = tgt_dir / "corpus.p"
+    def from_pickle(cls, corpus_file: Path):
+        pickle_path = corpus_file
         # logger.debug("Creating Corpus object from pickle file path %s", pickle_path)
         with pickle_path.open("rb") as f:
             c = pickle.load(f)

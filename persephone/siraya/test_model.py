@@ -1,13 +1,20 @@
 from pathlib import Path
-from persephone import siraya
+from persephone import siraya, corpus, corpus_reader
 
 
-reader = siraya.FakeReader(Path("/tmp/SirayaTest"), 123, 19)
-print(reader.corpus)
 
-model = siraya.SirayaModel("/tmp/exp", reader, num_layers=1, hidden_size=512)
+corpus_dir="/tmp/SirayaTest3"
+corpus = corpus.Corpus("fbank", "ipa", corpus_dir)
+#reader = corpus_reader.CorpusReader(corpus, num_train=1024, batch_size=32)
 
-model_path = "/home/pierre/SRC/Siraya/Models/17/model/model_best.ckpt"
+reader = siraya.FakeReader(Path("/tmp/SirayaTest3/corpus.p"), 123, 23)
+model = siraya.SirayaModel("/tmp/exp", reader, num_layers=3, hidden_size=256)
+
+
+
+model_path = "/home/pierre/SRC/Siraya/Models/22/model/model_best.ckpt"
+
+
 
 
 dir = Path("/home/pierre/Corpora/Siraya/Recording-laptop")
@@ -16,3 +23,4 @@ for f in dir.iterdir():
     prediction, scores = model.transcribeOne(str(f.absolute()), restore_model_path=model_path)
     print(prediction)
     print(sorted(scores, key=lambda x: x[1]))
+print(corpus.vocab_size, corpus.num_feats)
