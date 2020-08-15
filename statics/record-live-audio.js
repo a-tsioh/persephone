@@ -54,7 +54,20 @@ function onRecordingReady(e) {
   var xhr = new XMLHttpRequest();
   xhr.onload = function(e) {
       if(this.readyState === 4) {
-          console.log("response", e.target.responseText);
+          resp = JSON.parse(e.target.responseText);
+          console.log("response", resp);
+
+          document.getElementById("results").textContent = `I heard ${resp.prediction}. I guess you mean ${resp.best} ?`;
+          details = document.getElementById("details");
+          while(details.firstChild) { details.removeChild(details.firstChild)}
+
+          for (i in resp.scores) {
+            word = resp.scores[i][0];
+            dist = resp.scores[i][1];
+            newChild = document.createElement("div");
+            newChild.textContent = `${word}: ${dist}`;
+            details.appendChild(newChild)
+          }
       }
   };
   var fd = new FormData();

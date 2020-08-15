@@ -61,5 +61,5 @@ def upload_wav():
     prediction, scores = model.transcribeOne("/tmp/sample_up.ogg", restore_model_path=model_file)
     #print(request.form['audio_data'])
     best = scores[np.argmax([-s for w, s in scores])][0]
-    return jsonify({"best": best, "prediction": prediction, "scores": sorted(scores, key=lambda x: (x[1],-len(x[0])))})
+    return jsonify({"best": best, "prediction": prediction, "scores": sorted(scores, key=lambda x: (x[1], -len(x[0])))})
 
